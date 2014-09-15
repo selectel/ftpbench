@@ -16,18 +16,18 @@ setup(
         "Environment :: Console :: Framebuffer",
         "Intended Audience :: System Administrators",
         "Intended Audience :: Developers",
-        "License :: OSI Approved :: MIT License"
+        "License :: OSI Approved :: MIT License",
         "Natural Language :: English",
         "Natural Language :: Russian",
         "Operating System :: OS Independent",
         "Operating System :: POSIX",
-        "Operating System :: POSIX :: Linux"
+        "Operating System :: POSIX :: Linux",
         "Programming Language :: Python :: 2.7",
         "Topic :: Software Development",
         "Topic :: Software Development :: Testing",
         "Topic :: Software Development :: Testing :: Traffic Generation",
         "Topic :: System :: Benchmark",
-        "Topic :: Utilities"
+        "Topic :: Utilities",
     ],
     install_requires=[
         "setuptools", "gevent", "dnspython", "Timecard", "docopt"
