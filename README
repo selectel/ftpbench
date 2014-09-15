@@ -1,0 +1,85 @@
+.. -*- mode: rst -*-
+
+What is ``ftpbench``?
+---------------------
+
+It's benchmark for load testing FTP servers.
+
+
+Feature
+-------
+
+* login benchmark
+* upload benchmark (STOR command)
+* download benchmark (RETR command)
+* run test for multiple servers
+* auto-detection for dns round-robin records
+* save result to cvs file
+
+
+Requires
+--------
+
+* gevent (http://www.gevent.org/)
+* dnspython (http://www.dnspython.org/)
+* docopt (http://docopt.org)
+* Timecard (https://github.com/selectel/timecard)
+
+
+Installation
+------------
+
+From source::
+
+    $ git clone https://github.com/selectel/ftpbench
+    $ cd ftpbench/
+    $ python setup.py install  # auto install all requires
+
+From pypi::
+
+    $ pip install ftpbench
+
+Standalone for ubuntu::
+
+    $ apt-get install python-gevent python-dnspython
+    $ git clone https://github.com/selectel/ftpbench
+    $ cd ftpbench/ftpbench/
+    $ wget https://raw.githubusercontent.com/docopt/docopt/master/docopt.py
+    $ wget https://raw.githubusercontent.com/selectel/timecard/master/timecard.py
+    $ python ftpbench.py --help
+
+
+Usage
+-----
+
+Run::
+
+    $ ftpbench --help
+
+    FTP benchmark.
+
+    Usage:
+        ftpbench --help
+        ftpbench -h <host> -u <user> -p <password> [options] login
+        ftpbench -h <host> -u <user> -p <password> [options] upload <workdir> [-s <size>]
+        ftpbench -h <host> -u <user> -p <password> [options] download <workdir> [-s <size>] [--files <count>]
+
+    Connection options:
+        -h <host>, --host=<host>              FTP host [default: 127.0.0.1:21]
+                                              You can list multiple servers, separated by commas,
+                                              e.g.: -h 10.0.0.1,10.0.0.2,10.0.0.3.
+                                              Auto-detection of dns round-robin records is supported.
+        -u <user>, --user=<user>              FTP user
+        -p <password>, --password=<password>  FTP password
+
+    Timing options:
+        -t <sec>, --timeout=<sec>             Timeout for operation [default: 10]
+        --maxrun=<minutes>                    Duration of benchmarking in minutes [default: 5]
+        --fixevery=<sec>                      Recording period for stat values [default: 5]
+
+    Benchmark options:
+        -c <count>, --concurrent=<count>      Concurrent operations [default: 10]
+        --csv=<file>                          Save result to csv file
+        <workdir>                             Base ftp dir to store test files
+        -s <size>, --size=<size>              Size of test files in MB [default: 10]
+        --files <count>                       Number of files generated for download test [default: 10]
