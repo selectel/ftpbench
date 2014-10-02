@@ -29,15 +29,16 @@ Requires
 Installation
 ------------
 
+Simple from pypi::
+
+    $ pip install ftpbench
+
 From source::
 
     $ git clone https://github.com/selectel/ftpbench
     $ cd ftpbench/
     $ python setup.py install  # auto install all requires
 
-From pypi::
-
-    $ pip install ftpbench
 
 Standalone for ubuntu::
 
