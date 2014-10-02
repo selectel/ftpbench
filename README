@@ -45,7 +45,7 @@ Standalone for ubuntu::
     $ git clone https://github.com/selectel/ftpbench
     $ cd ftpbench/ftpbench/
     $ wget https://raw.githubusercontent.com/docopt/docopt/master/docopt.py
-    $ wget https://raw.githubusercontent.com/selectel/timecard/master/timecard.py
+    $ wget https://raw.githubusercontent.com/selectel/timecard/master/timecard/timecard.py
     $ python ftpbench.py --help
 
 
