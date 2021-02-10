@@ -119,7 +119,14 @@ class FTP(object):
     @contextmanager
     def connect(self):
         with Timeout(self.timeout):
-            ftp = _FTP(self.host)
+            if ":" in self.host:
+                host_port = self.host.rsplit(":",1)
+                host = host_port[0]
+                port = int(host_port[1])
+                ftp = _FTP()
+                ftp.connect(host, port)
+            else:
+                ftp = _FTP(self.host)
             ftp.login(self.user, self.password)
 
         try:
@@ -181,9 +188,9 @@ def run_bench_login(opts):
         opts["host"], opts["user"], opts["password"],
         opts["timeout"], stats=stats)
 
-    print "\n\rStart login benchmark: concurrent={} timeout={}s\n\r".format(
+    print("\n\rStart login benchmark: concurrent={} timeout={}s\n\r".format(
         opts["concurrent"], opts["timeout"]
-    )
+    ))
 
     stats.write_headers()
 
@@ -221,7 +228,7 @@ def run_bench_login(opts):
     except (KeyboardInterrupt, Timeout):
         pass
     finally:
-        print "\n"
+        print("\n")
         gr_stats.kill()
         gr_pool.kill()
 
@@ -285,13 +292,12 @@ def run_bench_upload(opts):
     except (KeyboardInterrupt, Timeout):
         pass
     finally:
-        print "\n"
+        print("\n")
         gr_stats.kill()
         gr_pool.kill()
-        print "Cleanning..."
+        print("Cleanning...")
         ftp.timeout = 60
         ftp.clean()
-
 
 def run_bench_download(opts):
     stats = Timecard(opts["csvfilename"])
@@ -309,7 +315,7 @@ def run_bench_download(opts):
         opts["timeout"], stats=stats
     )
 
-    print "Preparing for testing..."
+    print("Preparing for testing...")
     ftp.timeout = 60
     for _ in xrange(opts["countfiles"]):
         path = os.path.join(
@@ -362,10 +368,10 @@ def run_bench_download(opts):
     except (KeyboardInterrupt, Timeout):
         pass
     finally:
-        print "\n"
+        print("\n")
         gr_stats.kill()
         gr_pool.kill()
-        print "Cleanning..."
+        print("Cleanning...")
         ftp.timeout = 60
         ftp.clean()
 
@@ -396,7 +402,7 @@ def main():
         opts["fixevery"] = int(arguments["--fixevery"])
         opts["countfiles"] = int(arguments["--files"])
     except docopt.DocoptExit as e:
-        print e.message
+        print(e.message)
     else:
         if arguments["login"]:
             run_bench_login(opts)
