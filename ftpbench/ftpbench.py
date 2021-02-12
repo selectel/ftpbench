@@ -29,7 +29,10 @@ Benchmark options:
 """
 # ------------------------------------------------------------------------------
 from __future__ import absolute_import
+from __future__ import print_function
 
+from builtins import range
+from builtins import object
 __author__ = "Konstantin Enchant <sirkonst@gmail.com>"
 
 try:
@@ -72,7 +75,7 @@ class Data(object):
     def __iter__(self):
         return self
 
-    def next(self):
+    def __next__(self):
         tosend = self.size - self.read
         if tosend == 0:
             raise StopIteration
@@ -112,7 +115,7 @@ class FTP(object):
         if n == 1:
             return self.hosts[0]
         else:
-            h = self._host_roundrobin.next()
+            h = next(self._host_roundrobin)
             self.stats.server[h] += 1
             return h
 
@@ -144,7 +147,7 @@ class FTP(object):
 
             for chunk in data:
                 with Timeout(self.timeout):
-                    channel.sendall(chunk)
+                    channel.sendall(chunk.encode('utf-8'))
                     self.stats.traffic += len(chunk)
 
             with Timeout(self.timeout):
@@ -295,9 +298,7 @@ def run_bench_upload(opts):
         print("\n")
         gr_stats.kill()
         gr_pool.kill()
-        print("Cleanning...")
-        ftp.timeout = 60
-        ftp.clean()
+
 
 def run_bench_download(opts):
     stats = Timecard(opts["csvfilename"])
@@ -317,7 +318,7 @@ def run_bench_download(opts):
 
     print("Preparing for testing...")
     ftp.timeout = 60
-    for _ in xrange(opts["countfiles"]):
+    for _ in range(opts["countfiles"]):
         path = os.path.join(
             opts["workdir"], "bench_read-%s" % uuid.uuid1().hex)
         data = Data(opts["size"] * 1024 * 1024)
@@ -350,7 +351,7 @@ def run_bench_download(opts):
         stats.request.total += 1
         try:
             with stats.downloadtime():
-                ftp.donwload(filesiter.next())
+                ftp.donwload(next(filesiter))
         except Timeout:
             stats.request.timeout += 1
         except (error_temp, error_perm, sock_error):
@@ -371,9 +372,6 @@ def run_bench_download(opts):
         print("\n")
         gr_stats.kill()
         gr_pool.kill()
-        print("Cleanning...")
-        ftp.timeout = 60
-        ftp.clean()
 
 
 def main():
@@ -385,7 +383,7 @@ def main():
         if resolver and "," not in opts["host"]:
             try:
                 hosts = []
-                for x in resolver.query(opts["host"], "A"):
+                for x in resolver.resolve(opts["host"], "A"):
                     hosts.append(x.to_text())
                 opts["host"] = ",".join(hosts)
             except resolver.NXDOMAIN:
