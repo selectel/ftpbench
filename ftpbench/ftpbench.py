@@ -147,7 +147,7 @@ class FTP(object):
 
             for chunk in data:
                 with Timeout(self.timeout):
-                    channel.sendall(chunk.encode('utf-8'))
+                    channel.sendall(chunk.encode())
                     self.stats.traffic += len(chunk)
 
             with Timeout(self.timeout):
