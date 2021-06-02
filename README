@@ -70,6 +70,8 @@ Run::
                                               You can list multiple servers, separated by commas,
                                               e.g.: -h 10.0.0.1,10.0.0.2,10.0.0.3.
                                               Auto-detection of dns round-robin records is supported.
+                                              For IPv6 use brackets,
+                                              e.g.: -h [2001:db8::216:cbff::42]:21.
         -u <user>, --user=<user>              FTP user
         -p <password>, --password=<password>  FTP password
 
