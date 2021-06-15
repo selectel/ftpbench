@@ -12,6 +12,8 @@ Connection options:
                                           You can list multiple servers, separated by commas,
                                           e.g.: -h 10.0.0.1,10.0.0.2,10.0.0.3.
                                           Auto-detection of dns round-robin records is supported.
+                                          For IPv6 use brackets,
+                                          e.g.: -h [2001:db8::216:cbff::42]:21.
     -u <user>, --user=<user>              FTP user
     -p <password>, --password=<password>  FTP password
 
@@ -46,6 +48,7 @@ import gevent
 from gevent import Timeout
 from gevent.pool import Pool
 
+import urllib.parse
 from contextlib import contextmanager
 from ftplib import FTP as _FTP, error_temp, error_perm
 from itertools import cycle
@@ -122,14 +125,13 @@ class FTP(object):
     @contextmanager
     def connect(self):
         with Timeout(self.timeout):
-            if ":" in self.host:
-                host_port = self.host.rsplit(":",1)
-                host = host_port[0]
-                port = int(host_port[1])
+            # parse ipaddress with urllib, "//" needed
+            result = urllib.parse.urlsplit('//' + self.host)
+            if(result.port):
                 ftp = _FTP()
-                ftp.connect(host, port)
+                ftp.connect(result.hostname, result.port)
             else:
-                ftp = _FTP(self.host)
+                ftp = _FTP(result.hostname)
             ftp.login(self.user, self.password)
 
         try:
