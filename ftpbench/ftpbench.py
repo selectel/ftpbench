@@ -20,6 +20,9 @@ Connection options:
 Timing options:
     -t <sec>, --timeout=<sec>             Timeout for operation [default: 10]
     --maxrun=<minutes>                    Duration of benchmarking in minutes [default: 5]
+    --maxiter=<iterations>                Maximum number of iterations of the benchmark
+                                          to execute, -1 means infinity, and the run is
+                                          only limited by maxrun [default: -1]
     --fixevery=<sec>                      Recording period for stat values [default: 5]
 
 Benchmark options:
@@ -51,7 +54,7 @@ from gevent.pool import Pool
 import urllib.parse
 from contextlib import contextmanager
 from ftplib import FTP as _FTP, error_temp, error_perm
-from itertools import cycle
+from itertools import cycle, count
 import uuid
 import os
 from socket import error as sock_error
@@ -227,7 +230,7 @@ def run_bench_login(opts):
     gr_pool = Pool(size=opts["concurrent"])
     try:
         with Timeout(opts["maxrun"] * 60 or None):
-            while True:
+            for _ in opts["iterations"]:
                 gr_pool.wait_available()
                 gr_pool.spawn(_check)
     except (KeyboardInterrupt, Timeout):
@@ -291,7 +294,7 @@ def run_bench_upload(opts):
     gr_pool = Pool(size=opts["concurrent"])
     try:
         with Timeout(opts["maxrun"] * 60 or None):
-            while True:
+            for _ in opts["iterations"]:
                 gr_pool.wait_available()
                 gr_pool.spawn(_check)
     except (KeyboardInterrupt, Timeout):
@@ -365,7 +368,7 @@ def run_bench_download(opts):
     gr_pool = Pool(size=opts["concurrent"])
     try:
         with Timeout(opts["maxrun"] * 60 or None):
-            while True:
+            for _ in opts["iterations"]:
                 gr_pool.wait_available()
                 gr_pool.spawn(_check)
     except (KeyboardInterrupt, Timeout):
@@ -391,11 +394,14 @@ def main():
             except resolver.NXDOMAIN:
                 pass
 
+        maxiter = int(arguments["--maxiter"])
+
         opts["user"] = arguments["--user"]
         opts["password"] = arguments["--password"]
         opts["concurrent"] = int(arguments["--concurrent"])
         opts["timeout"] = int(arguments["--timeout"])
         opts["maxrun"] = float(arguments["--maxrun"])
+        opts["iterations"] = count() if maxiter == -1 else range(maxiter)
         opts["size"] = int(arguments["--size"])
         opts["workdir"] = arguments["<workdir>"]
         opts["csvfilename"] = arguments["--csv"]
